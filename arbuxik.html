@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arbuxik — TechToker & Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg:           #0a0812;
+      --bg2:          #0f0b1a;
+      --surface:      #141020;
+      --surface2:     #1c1730;
+      --ink:          #f0ecff;
+      --muted:        #8b82a8;
+      --faint:        #3d3558;
+      --accent:       #a855f7;
+      --accent2:      #7c3aed;
+      --accent3:      #c084fc;
+      --accent-glow:  rgba(168, 85, 247, 0.35);
+      --accent-faint: rgba(168, 85, 247, 0.08);
+      --border:       rgba(168, 85, 247, 0.15);
+      --border2:      rgba(168, 85, 247, 0.08);
+      --white:        #ffffff;
+      --ease:         cubic-bezier(0.22, 1, 0.36, 1);
+      --spring:       cubic-bezier(0.34, 1.56, 0.64, 1);
+      --smooth:       cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ══════════════════════════════
+       NOISE OVERLAY
+    ══════════════════════════════ */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.5;
+    }
+
+    /* ══════════════════════════════
+       ANIMATED BACKGROUND ORBS
+    ══════════════════════════════ */
+    .orbs {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      animation: orbFloat 12s var(--ease) infinite alternate;
+    }
+
+    .orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(124,58,237,0.18) 0%, transparent 70%);
+      top: -200px; left: -100px;
+      animation-duration: 14s;
+    }
+
+    .orb-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(168,85,247,0.12) 0%, transparent 70%);
+      top: 30%; right: -150px;
+      animation-duration: 18s;
+      animation-delay: -6s;
+    }
+
+    .orb-3 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(192,132,252,0.10) 0%, transparent 70%);
+      bottom: 10%; left: 30%;
+      animation-duration: 20s;
+      animation-delay: -10s;
+    }
+
+    @keyframes orbFloat {
+      0%   { transform: translate(0, 0) scale(1); }
+      33%  { transform: translate(40px, -30px) scale(1.05); }
+      66%  { transform: translate(-20px, 20px) scale(0.96); }
+      100% { transform: translate(30px, 10px) scale(1.02); }
+    }
+
+    /* ══════════════════════════════
+       NAV
+    ══════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 68px;
+      background: rgba(10, 8, 18, 0.7);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.5s var(--ease), box-shadow 0.5s var(--ease);
+    }
+
+    nav.scrolled {
+      border-color: var(--border);
+      box-shadow: 0 0 40px rgba(124, 58, 237, 0.08);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      text-decoration: none;
+      transition: opacity 0.25s;
+      position: relative;
+    }
+
+    .nav-logo::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s var(--ease);
+    }
+
+    .nav-logo:hover::after { transform: scaleX(1); }
+
+    .nav-logo span {
+      background: linear-gradient(135deg, var(--accent), var(--accent3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links { display: flex; gap: 4px; list-style: none; }
+
+    .nav-links a {
+      font-size: 0.78rem; font-weight: 500;
+      color: var(--muted); text-decoration: none;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 7px 16px; border-radius: 100px;
+      border: 1px solid transparent;
+      transition: color 0.25s var(--ease), background 0.25s var(--ease),
+                  border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+    }
+
+    .nav-links a:hover {
+      color: var(--ink);
+      background: var(--accent-faint);
+      border-color: var(--border);
+    }
+
+    .nav-links a.active {
+      color: var(--ink);
+      background: linear-gradient(135deg, rgba(124,58,237,0.4), rgba(168,85,247,0.25));
+      border-color: var(--border);
+      box-shadow: 0 0 16px rgba(168,85,247,0.2);
+    }
+
+    /* ══════════════════════════════
+       HERO
+    ══════════════════════════════ */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 48px 90px;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    /* giant background letters */
+    .hero-bg-text {
+      position: absolute;
+      top: 48%;
+      left: -0.03em;
+      transform: translateY(-50%);
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(120px, 24vw, 380px);
+      line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(168, 85, 247, 0.12);
+      letter-spacing: -0.04em;
+      pointer-events: none;
+      user-select: none;
+      will-change: transform;
+      opacity: 0;
+      animation: bgIn 1.6s var(--ease) 0.1s forwards;
+    }
+
+    /* subtle grid lines */
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(168,85,247,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(168,85,247,0.03) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+      pointer-events: none;
+    }
+
+    /* bottom gradient fade */
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 200px;
+      background: linear-gradient(transparent, var(--bg));
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: slideUp 1s var(--ease) 0.4s forwards;
+    }
+
+    .hero-eyebrow-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s ease infinite 1.5s;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(168,85,247,0.6); }
+      50%       { box-shadow: 0 0 0 6px rgba(168,85,247,0); }
+    }
+
+    .hero-headline {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(48px, 7.5vw, 108px);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      color: var(--ink);
+      max-width: 950px;
+      opacity: 0;
+      animation: slideUp 1s var(--ease) 0.55s forwards;
+    }
+
+    .hero-headline .grad {
+      background: linear-gradient(135deg, var(--accent3) 0%, var(--accent) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% 200%;
+      animation: gradShift 4s ease infinite 1.5s;
+    }
+
+    @keyframes gradShift {
+      0%, 100% { background-position: 0% 50%; }
+      50%       { background-position: 100% 50%; }
+    }
+
+    .hero-sub {
+      margin-top: 36px;
+      font-size: 1.1rem; font-weight: 300;
+      color: var(--muted); max-width: 500px; line-height: 1.75;
+      opacity: 0; animation: slideUp 1s var(--ease) 0.7s forwards;
+    }
+
+    .hero-cta {
+      margin-top: 52px; display: flex; gap: 16px; align-items: center;
+      opacity: 0; animation: slideUp 1s var(--ease) 0.85s forwards;
+    }
+
+    /* scroll pill */
+    .scroll-hint {
+      position: absolute; bottom: 36px; right: 48px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      opacity: 0; animation: fadeIn 1s var(--ease) 1.8s forwards;
+    }
+
+    .scroll-hint-pill {
+      width: 26px; height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      display: flex; align-items: flex-start; justify-content: center;
+      padding-top: 6px;
+    }
+
+    .scroll-hint-dot {
+      width: 4px; height: 8px;
+      border-radius: 100px;
+      background: var(--accent);
+      animation: scrollDot 1.8s var(--ease) infinite 2s;
+    }
+
+    @keyframes scrollDot {
+      0%   { transform: translateY(0); opacity: 1; }
+      80%  { transform: translateY(16px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 0; }
+    }
+
+    .scroll-hint span {
+      font-size: 0.65rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--faint);
+    }
+
+    /* ══════════════════════════════
+       BUTTONS
+    ══════════════════════════════ */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      color: var(--white);
+      padding: 14px 30px;
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 0.875rem; letter-spacing: 0.04em;
+      text-decoration: none; border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(168,85,247,0.3);
+      position: relative; overflow: hidden;
+      transition: transform 0.3s var(--spring), box-shadow 0.3s var(--ease);
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 36px rgba(168,85,247,0.45);
+    }
+
+    .btn-primary:hover::before { opacity: 1; }
+    .btn-primary:active { transform: translateY(0) scale(0.98); }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--muted); padding: 14px 0; font-size: 0.875rem; font-weight: 500;
+      text-decoration: none;
+      border-bottom: 1px solid var(--faint);
+      transition: color 0.25s var(--ease), border-color 0.25s var(--ease),
+                  gap 0.3s var(--spring);
+    }
+
+    .btn-ghost:hover { color: var(--accent3); border-color: var(--accent); gap: 14px; }
+
+    /* ══════════════════════════════
+       SECTION COMMON
+    ══════════════════════════════ */
+    .page-section {
+      padding: 130px 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-label {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 20px;
+    }
+
+    .section-label::before {
+      content: '';
+      width: 24px; height: 1px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: clamp(34px, 4.5vw, 58px); letter-spacing: -0.035em;
+      line-height: 1.05; color: var(--ink); margin-bottom: 56px;
+    }
+
+    .section-title .grad {
+      background: linear-gradient(135deg, var(--accent3), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .divider {
+      width: calc(100% - 96px); height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 0 auto;
+      max-width: calc(1200px - 96px);
+      position: relative; z-index: 1;
+    }
+
+    /* ══════════════════════════════
+       ABOUT
+    ══════════════════════════════ */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+
+    .about-text p {
+      font-size: 1.05rem; font-weight: 300;
+      color: var(--muted); line-height: 1.85; margin-bottom: 22px;
+    }
+
+    .about-text p strong { color: var(--ink); font-weight: 500; }
+
+    .about-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 36px; }
+
+    .tag {
+      font-size: 0.76rem; font-weight: 500; letter-spacing: 0.04em;
+      padding: 6px 14px;
+      background: var(--accent-faint);
+      border: 1px solid var(--border);
+      border-radius: 4px; color: var(--muted);
+      transition: background 0.25s var(--ease), color 0.25s var(--ease),
+                  border-color 0.25s var(--ease), transform 0.25s var(--spring),
+                  box-shadow 0.25s var(--ease);
+      cursor: default;
+    }
+
+    .tag:hover {
+      background: rgba(168,85,247,0.2);
+      color: var(--accent3); border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 4px 16px rgba(168,85,247,0.2);
+    }
+
+    .about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border2); padding: 32px 28px;
+      position: relative; overflow: hidden;
+      transition: background 0.3s var(--ease), transform 0.3s var(--spring),
+                  border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .stat-card:hover {
+      background: var(--surface2); transform: scale(1.03); z-index: 1;
+      border-color: var(--border);
+      box-shadow: 0 8px 32px rgba(168,85,247,0.12);
+    }
+
+    .stat-card:hover::before { opacity: 1; }
+    .stat-card:first-child  { border-radius: 6px 0 0 0; }
+    .stat-card:nth-child(2) { border-radius: 0 6px 0 0; }
+    .stat-card:nth-child(3) { border-radius: 0 0 0 6px; }
+    .stat-card:last-child   { border-radius: 0 0 6px 0; }
+
+    .stat-number {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 2.4rem; letter-spacing: -0.04em; line-height: 1; margin-bottom: 6px;
+      background: linear-gradient(135deg, var(--ink), var(--accent3));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label { font-size: 0.8rem; font-weight: 400; color: var(--muted); }
+
+    /* ══════════════════════════════
+       TIKTOK
+    ══════════════════════════════ */
+    .tiktok-wrapper {
+      background: var(--surface);
+      border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+      transition: box-shadow 0.4s var(--ease), transform 0.4s var(--ease), border-color 0.4s var(--ease);
+    }
+
+    .tiktok-wrapper:hover {
+      box-shadow: 0 0 60px rgba(168,85,247,0.15), 0 20px 60px rgba(0,0,0,0.3);
+      transform: translateY(-4px);
+      border-color: rgba(168,85,247,0.3);
+    }
+
+    .tiktok-header {
+      display: flex; align-items: center; gap: 20px;
+      padding: 36px 40px; border-bottom: 1px solid var(--border2);
+      background: linear-gradient(135deg, var(--surface2), var(--surface));
+    }
+
+    .tiktok-avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent2), var(--accent3));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.5rem; color: white; flex-shrink: 0;
+      box-shadow: 0 0 24px rgba(168,85,247,0.35);
+      transition: transform 0.4s var(--spring), box-shadow 0.4s var(--ease);
+    }
+
+    .tiktok-header:hover .tiktok-avatar {
+      transform: scale(1.1) rotate(-6deg);
+      box-shadow: 0 0 40px rgba(168,85,247,0.55);
+    }
+
+    .tiktok-handle {
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 1.35rem; letter-spacing: -0.02em; color: var(--ink);
+    }
+
+    .tiktok-username { font-size: 0.85rem; color: var(--muted); margin-top: 3px; }
+
+    .tiktok-link {
+      margin-left: auto; display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.82rem; font-weight: 700; font-family: 'Syne', sans-serif;
+      letter-spacing: 0.04em; color: var(--accent); text-decoration: none;
+      border: 1px solid var(--border); padding: 10px 20px; border-radius: 8px;
+      background: var(--accent-faint);
+      transition: background 0.25s var(--ease), color 0.25s var(--ease),
+                  transform 0.25s var(--spring), box-shadow 0.25s var(--ease),
+                  border-color 0.25s var(--ease);
+    }
+
+    .tiktok-link:hover {
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      color: var(--white); border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(168,85,247,0.35);
+    }
+
+    .tiktok-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); }
+
+    .tt-stat {
+      padding: 32px 40px; border-right: 1px solid var(--border2);
+      transition: background 0.25s var(--ease);
+    }
+
+    .tt-stat:hover { background: var(--surface2); }
+    .tt-stat:last-child { border-right: none; }
+
+    .tt-stat-num {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 2.2rem; letter-spacing: -0.04em;
+      background: linear-gradient(135deg, var(--ink), var(--accent3));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .tt-stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+
+    .tiktok-content-area {
+      padding: 32px 40px;
+      background: linear-gradient(135deg, var(--surface), var(--bg2));
+      border-top: 1px solid var(--border2);
+    }
+
+    .tiktok-bio { font-size: 1rem; font-weight: 300; color: var(--muted); line-height: 1.8; margin-bottom: 24px; max-width: 600px; }
+
+    .content-topics { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .topic-pill {
+      font-size: 0.76rem; font-weight: 600; padding: 5px 14px; border-radius: 100px;
+      background: rgba(168,85,247,0.1); color: var(--accent);
+      border: 1px solid var(--border); letter-spacing: 0.03em;
+      transition: background 0.2s var(--ease), color 0.2s var(--ease),
+                  transform 0.2s var(--spring), box-shadow 0.2s var(--ease),
+                  border-color 0.2s;
+      cursor: default;
+    }
+
+    .topic-pill:hover {
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      color: var(--white); border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(168,85,247,0.3);
+    }
+
+    /* ══════════════════════════════
+       PROJECTS
+    ══════════════════════════════ */
+    .projects-stack { display: flex; flex-direction: column; gap: 28px; }
+
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border2); border-radius: 12px; overflow: hidden;
+      display: grid; grid-template-columns: 1fr 1fr; min-height: 400px;
+      position: relative;
+      transition: box-shadow 0.5s var(--ease), transform 0.5s var(--ease),
+                  border-color 0.5s var(--ease);
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute; inset: 0; border-radius: 12px;
+      background: linear-gradient(135deg, rgba(168,85,247,0.06), transparent 60%);
+      opacity: 0; transition: opacity 0.4s;
+      pointer-events: none; z-index: 2;
+    }
+
+    .project-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 0 0 1px rgba(168,85,247,0.25),
+                  0 24px 80px rgba(0,0,0,0.4),
+                  0 0 80px rgba(168,85,247,0.08);
+      border-color: rgba(168,85,247,0.25);
+    }
+
+    .project-card:hover::before { opacity: 1; }
+
+    .project-visual {
+      position: relative; display: flex;
+      align-items: center; justify-content: center;
+      overflow: hidden; min-height: 300px;
+    }
+
+    /* animated mesh gradient background */
+    .project-visual-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, #1a0d2e, #0d0820, #160d28);
+      transition: transform 0.8s var(--ease);
+    }
+
+    .project-card:hover .project-visual-bg { transform: scale(1.04); }
+
+    /* animated grid */
+    .project-visual-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(168,85,247,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(168,85,247,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+      transition: transform 0.8s var(--ease), opacity 0.4s;
+      opacity: 0.6;
+    }
+
+    .project-card:hover .project-visual-grid { transform: scale(1.08); opacity: 1; }
+
+    /* glowing ring */
+    .project-glow-ring {
+      position: absolute;
+      width: 220px; height: 220px; border-radius: 50%;
+      border: 1px solid rgba(168,85,247,0.15);
+      animation: ringPulse 3s ease infinite;
+    }
+
+    .project-glow-ring:nth-child(3) {
+      width: 300px; height: 300px;
+      animation-delay: -1.5s;
+    }
+
+    @keyframes ringPulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50%       { transform: scale(1.08); opacity: 0.15; }
+    }
+
+    .project-icon-wrap {
+      width: 88px; height: 88px; border-radius: 20px;
+      background: rgba(168,85,247,0.12);
+      border: 1px solid rgba(168,85,247,0.3);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; z-index: 1;
+      transition: transform 0.5s var(--spring), box-shadow 0.5s var(--ease),
+                  background 0.3s var(--ease);
+      box-shadow: 0 0 0 rgba(168,85,247,0);
+    }
+
+    .project-card:hover .project-icon-wrap {
+      transform: scale(1.15) rotate(8deg);
+      box-shadow: 0 0 40px rgba(168,85,247,0.4);
+      background: rgba(168,85,247,0.2);
+    }
+
+    .project-icon-wrap svg { width: 38px; height: 38px; stroke-width: 1.5; fill: none; }
+
+    .project-info { padding: 52px; display: flex; flex-direction: column; justify-content: center; }
+
+    .project-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 5px 12px; border-radius: 100px; margin-bottom: 24px; width: fit-content;
+      background: rgba(168,85,247,0.12);
+      border: 1px solid var(--border); color: var(--accent);
+    }
+
+    .project-badge-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s ease infinite;
+    }
+
+    .project-name {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 2.2rem; letter-spacing: -0.03em;
+      color: var(--ink); line-height: 1.05; margin-bottom: 16px;
+    }
+
+    .project-desc {
+      font-size: 0.95rem; font-weight: 300;
+      color: var(--muted); line-height: 1.8; margin-bottom: 36px;
+    }
+
+    .project-tech-list { display: flex; flex-wrap: wrap; gap: 7px; }
+
+    .tech-chip {
+      font-size: 0.73rem; font-weight: 600; font-family: 'Syne', sans-serif;
+      padding: 5px 12px;
+      background: var(--accent-faint); border: 1px solid var(--border);
+      border-radius: 4px; color: var(--muted); letter-spacing: 0.03em;
+      transition: background 0.2s var(--ease), color 0.2s var(--ease),
+                  transform 0.2s var(--spring), border-color 0.2s;
+    }
+
+    .tech-chip:hover {
+      background: rgba(168,85,247,0.2); color: var(--accent3);
+      border-color: var(--accent); transform: translateY(-2px);
+    }
+
+    /* ══════════════════════════════
+       FOOTER
+    ══════════════════════════════ */
+    footer {
+      border-top: 1px solid var(--border2); padding: 52px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: relative; z-index: 1;
+    }
+
+    .footer-logo {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1rem; color: var(--muted); text-decoration: none;
+      transition: color 0.25s;
+    }
+
+    .footer-logo:hover { color: var(--ink); }
+
+    .footer-logo span {
+      background: linear-gradient(135deg, var(--accent), var(--accent3));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-copy { font-size: 0.78rem; color: var(--faint); }
+
+    /* ══════════════════════════════
+       REVEAL ANIMATIONS
+    ══════════════════════════════ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+    }
+
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    .reveal-left {
+      opacity: 0; transform: translateX(-40px);
+      transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+    }
+
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+
+    .reveal-right {
+      opacity: 0; transform: translateX(40px);
+      transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+    }
+
+    .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+    .reveal-scale {
+      opacity: 0; transform: scale(0.94);
+      transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+    }
+
+    .reveal-scale.visible { opacity: 1; transform: scale(1); }
+
+    .stagger > * {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+    }
+
+    .stagger.visible > *:nth-child(1) { transition-delay:   0ms; }
+    .stagger.visible > *:nth-child(2) { transition-delay:  70ms; }
+    .stagger.visible > *:nth-child(3) { transition-delay: 140ms; }
+    .stagger.visible > *:nth-child(4) { transition-delay: 210ms; }
+    .stagger.visible > *:nth-child(5) { transition-delay: 280ms; }
+    .stagger.visible > *:nth-child(6) { transition-delay: 350ms; }
+    .stagger.visible > *:nth-child(7) { transition-delay: 420ms; }
+    .stagger.visible > *:nth-child(8) { transition-delay: 490ms; }
+    .stagger.visible > * { opacity: 1; transform: translateY(0); }
+
+    /* ══════════════════════════════
+       KEYFRAMES
+    ══════════════════════════════ */
+    @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes bgIn {
+      from { opacity: 0; transform: translateY(-47%) scale(0.96) skewX(-1deg); }
+      to   { opacity: 1; transform: translateY(-50%) scale(1) skewX(0); }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════ */
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-links a { padding: 6px 10px; font-size: 0.7rem; }
+      .hero { padding: 0 24px 64px; }
+      .scroll-hint { display: none; }
+      .page-section { padding: 80px 24px; }
+      .about-grid { grid-template-columns: 1fr; gap: 48px; }
+      .project-card { grid-template-columns: 1fr; }
+      .project-visual { min-height: 220px; }
+      .tiktok-stats-row { grid-template-columns: 1fr; }
+      .tt-stat { border-right: none; border-bottom: 1px solid var(--border2); }
+      footer { flex-direction: column; gap: 12px; text-align: center; padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- animated background orbs -->
+  <div class="orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- NAV -->
+  <nav id="main-nav">
+    <a href="#hero" class="nav-logo">arb<span>uxik</span></a>
+    <ul class="nav-links">
+      <li><a href="#about"    data-section="about">About</a></li>
+      <li><a href="#tiktok"   data-section="tiktok">TikTok</a></li>
+      <li><a href="#projects" data-section="projects">Projects</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero" id="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-bg-text">ARB</div>
+
+    <div class="hero-eyebrow">
+      <div class="hero-eyebrow-dot"></div>
+      TechToker &amp; Builder
+    </div>
+
+    <h1 class="hero-headline">
+      Building things.<br/>
+      <span class="grad">Talking about them.</span>
+    </h1>
+
+    <p class="hero-sub">
+      I'm Arbuxik — I build real software, from game engines to custom ROMs, and cover the world of phones &amp; operating systems on TikTok.
+    </p>
+
+    <div class="hero-cta">
+      <a href="#tiktok" class="btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+        </svg>
+        See my TikTok
+      </a>
+      <a href="#projects" class="btn-ghost">
+        View Projects
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <div class="scroll-hint">
+      <div class="scroll-hint-pill">
+        <div class="scroll-hint-dot"></div>
+      </div>
+      <span>Scroll</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ABOUT -->
+  <section id="about" class="page-section">
+    <p class="section-label reveal">Who I Am</p>
+    <h2 class="section-title reveal">A creator who<br/><span class="grad">builds in public.</span></h2>
+    <div class="about-grid">
+      <div class="about-text reveal-left">
+        <p>
+          Hi, I'm <strong>Arbuxik</strong> — a tech content creator passionate about building things from scratch. I love diving deep into complex systems, whether that's game engines, custom operating environments, or Android modifications.
+        </p>
+        <p>
+          On TikTok I cover everything phones and operating systems — from custom ROM breakdowns to OS comparisons and the latest in smartphone tech. No fluff, just real talk about the stuff that matters.
+        </p>
+        <p>
+          I primarily work with <strong>C++20</strong>, <strong>Lua</strong>, and <strong>Qt6</strong>, with roots in Windows native development and a passion for understanding systems at a low level.
+        </p>
+        <div class="about-tags stagger">
+          <span class="tag">C++20</span>
+          <span class="tag">Qt6</span>
+          <span class="tag">LuaJIT</span>
+          <span class="tag">OpenGL</span>
+          <span class="tag">Android</span>
+          <span class="tag">AOSP</span>
+          <span class="tag">Windows Native</span>
+          <span class="tag">Content Creator</span>
+        </div>
+      </div>
+      <div class="about-stats stagger" style="display:grid; grid-template-columns:1fr 1fr; gap:3px;">
+        <div class="stat-card">
+          <div class="stat-number">C++</div>
+          <div class="stat-label">Primary language</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">2</div>
+          <div class="stat-label">Active projects</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">#1</div>
+          <div class="stat-label">Passion: building OSes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">∞</div>
+          <div class="stat-label">Things left to build</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- TIKTOK -->
+  <section id="tiktok" class="page-section">
+    <p class="section-label reveal">Social Media</p>
+    <h2 class="section-title reveal">Find me on <span class="grad">TikTok.</span></h2>
+    <div class="tiktok-wrapper reveal-scale">
+      <div class="tiktok-header">
+        <div class="tiktok-avatar">A</div>
+        <div>
+          <div class="tiktok-handle">arbuxik_tech</div>
+          <div class="tiktok-username">@arbuxik_tech · TikTok</div>
+        </div>
+        <a href="https://www.tiktok.com/@arbuxik_tech" target="_blank" rel="noopener" class="tiktok-link">
+          Open TikTok
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+      </div>
+      <div class="tiktok-stats-row">
+        <div class="tt-stat">
+          <div class="tt-stat-num">—</div>
+          <div class="tt-stat-label">Followers</div>
+        </div>
+        <div class="tt-stat">
+          <div class="tt-stat-num">—</div>
+          <div class="tt-stat-label">Likes</div>
+        </div>
+        <div class="tt-stat">
+          <div class="tt-stat-num">Tech</div>
+          <div class="tt-stat-label">Niche</div>
+        </div>
+      </div>
+      <div class="tiktok-content-area">
+        <p class="tiktok-bio">
+          I post about phones, operating systems, custom ROMs, and everything in between. From OS deep-dives to the latest smartphone news — if it runs software, I'm talking about it.
+        </p>
+        <div class="content-topics stagger">
+          <span class="topic-pill">#Phones</span>
+          <span class="topic-pill">#CustomROM</span>
+          <span class="topic-pill">#Android</span>
+          <span class="topic-pill">#OperatingSystems</span>
+          <span class="topic-pill">#AOSP</span>
+          <span class="topic-pill">#TechTok</span>
+          <span class="topic-pill">#SmartphoneTech</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- PROJECTS -->
+  <section id="projects" class="page-section">
+    <p class="section-label reveal">2 Projects</p>
+    <h2 class="section-title reveal">What I'm <span class="grad">building.</span></h2>
+
+    <div class="projects-stack">
+
+      <!-- ArbuxikEngine -->
+      <div class="project-card reveal-left">
+        <div class="project-visual">
+          <div class="project-visual-bg"></div>
+          <div class="project-visual-grid"></div>
+          <div class="project-glow-ring"></div>
+          <div class="project-glow-ring"></div>
+          <div class="project-icon-wrap">
+            <svg viewBox="0 0 24 24" style="stroke: var(--accent);">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+            </svg>
+          </div>
+        </div>
+        <div class="project-info">
+          <span class="project-badge">
+            <span class="project-badge-dot"></span>
+            In Development
+          </span>
+          <h3 class="project-name">ArbuxikEngine</h3>
+          <p class="project-desc">
+            A native Windows game engine built in C++20 from scratch. Features a Unity-style editor built with Qt6, multi-platform build output, OpenGL rendering, and LuaJIT scripting. The goal: full creative control with zero bloat.
+          </p>
+          <div class="project-tech-list">
+            <span class="tech-chip">C++20</span>
+            <span class="tech-chip">Qt6</span>
+            <span class="tech-chip">OpenGL</span>
+            <span class="tech-chip">LuaJIT</span>
+            <span class="tech-chip">Windows Native</span>
+            <span class="tech-chip">CMake</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MidnightOS -->
+      <div class="project-card reveal-right" style="flex-direction:row-reverse;">
+        <div class="project-visual" style="background:#060410;">
+          <div class="project-visual-bg" style="background: linear-gradient(135deg, #06021a, #0a0520, #080318);"></div>
+          <div class="project-visual-grid" style="background-image: linear-gradient(rgba(192,132,252,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(192,132,252,0.05) 1px, transparent 1px);"></div>
+          <div class="project-glow-ring" style="border-color: rgba(192,132,252,0.12);"></div>
+          <div class="project-glow-ring" style="border-color: rgba(192,132,252,0.06);"></div>
+          <div class="project-icon-wrap" style="background:rgba(192,132,252,0.1); border-color:rgba(192,132,252,0.25);">
+            <svg viewBox="0 0 24 24" style="stroke: var(--accent3);">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="project-info">
+          <span class="project-badge" style="color:var(--accent3); border-color:rgba(192,132,252,0.2); background:rgba(192,132,252,0.07);">
+            <span class="project-badge-dot" style="background:var(--accent3);"></span>
+            In Development · Custom ROM
+          </span>
+          <h3 class="project-name">MidnightOS</h3>
+          <p class="project-desc">
+            A custom Android ROM based on AOSP, built for performance, privacy, and a clean dark-first experience. MidnightOS strips away bloat, adds deep customisation options, and is tuned for a smooth, midnight-themed daily driver.
+          </p>
+          <div class="project-tech-list">
+            <span class="tech-chip">Android</span>
+            <span class="tech-chip">AOSP</span>
+            <span class="tech-chip">Linux Kernel</span>
+            <span class="tech-chip">Custom ROM</span>
+            <span class="tech-chip">ADB / Fastboot</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <a href="#hero" class="footer-logo">arb<span>uxik</span></a>
+    <span class="footer-copy">© 2026 Arbuxik. Built from scratch, as usual.</span>
+  </footer>
+
+  <script>
+    /* smooth scroll */
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', e => {
+        const t = document.querySelector(link.getAttribute('href'));
+        if (!t) return;
+        e.preventDefault();
+        t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    /* nav shadow on scroll */
+    const nav = document.getElementById('main-nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+
+    /* active nav link */
+    const secIds = ['about', 'tiktok', 'projects'];
+    const secs   = secIds.map(id => document.getElementById(id));
+    const links  = document.querySelectorAll('.nav-links a[data-section]');
+
+    function updateNav() {
+      const y = window.scrollY + 140;
+      let cur = null;
+      secs.forEach(s => { if (s && s.offsetTop <= y) cur = s.id; });
+      links.forEach(a => a.classList.toggle('active', a.dataset.section === cur));
+    }
+
+    window.addEventListener('scroll', updateNav, { passive: true });
+    updateNav();
+
+    /* hero parallax */
+    const bgText = document.querySelector('.hero-bg-text');
+    const heroGrid = document.querySelector('.hero-grid');
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      if (bgText) bgText.style.transform = `translateY(calc(-50% + ${y * 0.14}px))`;
+      if (heroGrid) heroGrid.style.transform = `translateY(${y * 0.05}px)`;
+    }, { passive: true });
+
+    /* mouse-tracking glow on project cards */
+    document.querySelectorAll('.project-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        const x = ((e.clientX - r.left) / r.width  * 100).toFixed(1);
+        const y = ((e.clientY - r.top)  / r.height * 100).toFixed(1);
+        card.style.setProperty('--mx', `${x}%`);
+        card.style.setProperty('--my', `${y}%`);
+      });
+    });
+
+    /* intersection observer */
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .stagger').forEach(el => io.observe(el));
+
+    /* staggered delay per index */
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach((el, i) => {
+      el.style.transitionDelay = `${(i % 4) * 60}ms`;
+    });
+  </script>
+
+</body>
+</html>
